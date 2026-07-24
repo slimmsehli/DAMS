@@ -1,0 +1,44 @@
+
+
+.model NMOS1 nmos (LEVEL=1 VTO=0.7 KP=100u GAMMA=0.4 LAMBDA=0.01)
+.model NMOS2 nmos (LEVEL=1 VTO=0.6 KP=80u GAMMA=0.35 LAMBDA=0.01)
+
+.model PMOS1 pmos (LEVEL=1 VTO=-0.7 KP=50u GAMMA=0.4 LAMBDA=0.01)
+.model PMOS2 pmos (LEVEL=1 VTO=-0.65 KP=40u GAMMA=0.35 LAMBDA=0.01)
+
+.subckt INV in out vdd gnd
+    MP1 out in vdd vdd PMOS1
+    MN1 out in gnd gnd NMOS1
+.ends INV
+
+.subckt BUF in out vdd gnd
+    X1 in n1 vdd gnd INV
+    X2 n1 out vdd gnd INV
+.ends BUF
+
+.subckt LPF in vss out 
+    R1 in out 1k
+    C1 out vss 10p
+.ends LPF
+
+.globals vdd vss
+vd1 vdd 0 1.8
+vd2 vss 0 0
+
+VIN in 0 PULSE(0 1.8 0 1n 1n 10n 20n)
+XBUF in out vdd gnd BUF
+
+XLPF in vss out_lpf LPF
+
+.options savecurrents
+.save all
+.tran 1ps 100ns
+*.save V(in) V(out) V(vdd) V(*)
+*.plot V(in) V(out) V(vdd) V(*)
+
+.control
+run
+write sim.raw
+.endc
+
+.end
