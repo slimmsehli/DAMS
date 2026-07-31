@@ -1,10 +1,11 @@
-#!/bin/csh -f
+#!/bin/sh -f
 
 # donwload ngspice from github
-#git clone https://github.com/ngspice/ngspice.git
+git clone https://github.com/ngspice/ngspice.git
+cd ngspice
+
 
 # Generate config
-cd ngspice
 rm -rf build installation
 export NGSPICE_HOME=$PWD/installation
 mkdir ${NGSPICE_HOME}
@@ -26,6 +27,7 @@ export CFLAGS="-std=gnu17"
     #CFLAGS="-m64-O2" LDFLAGS="-m64-s"
 
 
+
 # Compile
 make clean
 make -j`nproc`
@@ -38,5 +40,39 @@ setenv PATH ${NGSPICE_HOME}/bin:$PATH
 #ngspice -v
 #find $NGSPICE_HOME -name "libngspice.so*"
 #ldd $NGSPICE_HOME/lib/libngspice.so
+
+export shared=0
+
+if ( $shared == 1) begin
+	sed -i 's/sys_errlist\[errno\]/strerror(errno)/g' src/include/ngspice/ngspice.h
+	sed -i 's/pthread_exit(1)/pthread_exit((void *)(long)1)/g' src/sharedspice.c
+
+	export temp_install=$PWD/installation_shared
+	rm -rf ${temp_install}
+	mkdir -p ${temp_install}
+
+	rm -rf build_shared
+	mkdir build_shared
+	cd build_shared
+
+	../configure --with-ngshared --enable-xspice --enable-cider --enable-openmp --disable-debug CFLAGS="-std=gnu17" --prefix=${temp_install}
+
+	# Compile
+	make clean
+	make -j`nproc`
+
+	#Install localy
+	make install prefix=${temp_install} -j`nproc`
+endif
+
+
+
+
+
+
+
+
+
+
 
 

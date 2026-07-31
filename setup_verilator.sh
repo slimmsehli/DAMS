@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh -f
 
 # using gcc 13.0
 # using python 3.13.0

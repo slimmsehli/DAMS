@@ -4,11 +4,8 @@ clean:
 
 ng:
 	ngspice -b analog/top.cir -r sim.raw 2>&1 | tee sim.log
-
-ng_wave:
-	#head -c 100 sim.raw | xxd
-	python3 raw2vcd.py sim.raw sim.vcd 
-	gtkwave sim.vcd
+	python3 raw2vcd.py sim.raw sim.vcd
+	rm -rf sim.raw
 
 verilator:
 	verilator --timing --binary --trace -Mdir simdir_verilator -o simv \
@@ -16,5 +13,5 @@ verilator:
 	cd simdir_verilator ;\
 	./simv
 
-verilator_wave:
-	gtkwave simdir_verilator/sim.vcd
+wave:
+	gtkwave sim.vcd &

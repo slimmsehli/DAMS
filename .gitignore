@@ -1,2 +1,4 @@
 ngspice
 verilator
+tests/simdir*
+
