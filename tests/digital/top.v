@@ -25,7 +25,7 @@ dlatch dlatch2(
 
 initial begin
     $display($time, " [INFO] - Simulation started");
-    $dumpfile("sim.vcd");
+    $dumpfile("sim_dig.vcd");
     $dumpvars(0, top); 
     reset = 1;
     clk = 0;

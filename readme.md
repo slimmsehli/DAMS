@@ -1,76 +1,62 @@
 
 # Mixed-Signal Simulation Wrapper
 
-This repository provides a small workflow for running mixed-signal simulations that combine analog SPICE netlists and digital Verilog modules. It is intended as a lightweight wrapper around ngspice for analog transient analysis and Verilator for digital simulation.
+This repository is ro provide a small workflow for running mixed signal simulation that combines both analog spice netlists and digital verilog modules.
+it is intended as a lightweight wrapper around ngspice for analog transient analysis and Verilator for digital simulation
+
 
 ## What this repo contains
-
-- [tests/analog](tests/analog) — sample analog SPICE testbench and netlist files.
-  - [tests/analog/top.cir](tests/analog/top.cir) contains MOSFET models, inverter/buffer subcircuits, and an RC low-pass filter example.
-- [tests/digital](tests/digital) — simple digital Verilog examples.
-  - [tests/digital/dlatch.v](tests/digital/dlatch.v) defines a latch module.
-  - [tests/digital/top.v](tests/digital/top.v) provides a small testbench that dumps a VCD waveform.
-- [tests](tests) — helper scripts and build targets for running simulations and viewing waveforms.
-  - [tests/Makefile](tests/Makefile) provides targets for analog and digital runs.
-  - [tests/raw2vcd.py](tests/raw2vcd.py) converts ngspice raw output into a VCD file for GTKWave.
-- [setup_ngspice.csh](setup_ngspice.csh), [setup_verilator.csh](setup_verilator.csh), and [setup.csh](setup.csh) — setup scripts for installing and configuring the required tools.
+- [setup_ngspice.csh](setup_ngspice.csh), [setup_verilator.csh](setup_verilator.csh), and [setup.csh](setup.csh) - setup scripts for installing and configuring the required tools.
+- [tests](tests) - test directory ment to for simulators tests in ngspice and verilator.
+- [src](src) - main simulation wrapper source code  
 
 ## Quick start
 
 1. Install the toolchains:
+- using both script you need to install verilator binary and ngspice shared library 
    ```bash
-   csh setup_ngspice.csh
-   csh setup_verilator.csh
+   ./setup_ngspice.sh
+   ./setup_verilator.sh
    ```
 
 2. Load the environment:
+-  this will set the simulators paths and also the shared libarary path for ngspice use
    ```bash
-   csh setup.csh
+   source setup.csh
    ```
 
-3. Run the analog SPICE simulation:
+3. Run the simulator tests
+- run analog simulation and the verilator simulation tests to make sure installation went correct :
    ```bash
    make -C tests ng
-   ```
-
-4. Convert the generated raw file to VCD and view it:
-   ```bash
-   make -C tests ng_wave
-   ```
-
-5. Run the digital Verilator simulation:
-   ```bash
    make -C tests verilator
    ```
-
-6. View the digital waveform:
+3. compile and run the top dams wrapper 
    ```bash
-   make -C tests verilator_wave
+   cd src 
+   make comp
+   make run
    ```
-
 ## Notes
 
-- The analog example uses ngspice and writes a raw file named sim.raw.
-- The digital example uses Verilator and writes a VCD file named sim.vcd.
-- If you want to inspect a converted waveform manually, you can run:
-  ```bash
-  python3 tests/raw2vcd.py tests/sim.raw tests/sim.vcd
-  ```
+- The analog example uses ngspice binary and write simulation signals to sim_ana.raw.
+- The digital example uses Verilator and writes a VCD file named sim_dig.vcd.
+- There is a python script that converts the raw fiel from ngspice to vcd format (was not able to dump vcd from ngspice, let me know if you have any idea) 
 
 ## Repository layout
 
 ```text
-simulator/
+DAMS/
 ├── setup.csh
 ├── setup_ngspice.csh
 ├── setup_verilator.csh
 ├── tests/
 │   ├── analog/
-│   │   └── top.cir
 │   ├── digital/
-│   │   ├── dlatch.v
-│   │   └── top.v
 │   ├── Makefile
 │   └── raw2vcd.py
+├── src
+│   ├── Makefile
+│   └── core 
 └── readme.md
 ```
